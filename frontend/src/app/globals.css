@@ -1,0 +1,627 @@
+@import "tailwindcss";
+
+:root {
+    --background: #05050a;
+    --foreground: #ededed;
+    --accent-blue: #4a7aff;
+    --accent-indigo: #6366f1;
+    --accent-purple: #7c3aed;
+    --glow-blue: rgba(74, 122, 255, 0.4);
+    --glow-indigo: rgba(99, 102, 241, 0.3);
+    --surface: rgba(255, 255, 255, 0.05);
+    --surface-border: rgba(255, 255, 255, 0.08);
+    --text-muted: rgba(255, 255, 255, 0.5);
+    --text-secondary: rgba(255, 255, 255, 0.7);
+}
+
+@theme inline {
+    --color-background: var(--background);
+    --color-foreground: var(--foreground);
+    --font-sans: var(--font-geist-sans);
+    --font-mono: var(--font-geist-mono);
+}
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    background: var(--background);
+    color: var(--foreground);
+    font-family: 'Inter', 'Geist', Arial, Helvetica, sans-serif;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+}
+
+.hidden {
+    display: none !important;
+}
+
+/* ─── Main Layout ────────────────────────────────────────────────────────── */
+.voxen-main {
+    min-height: 100vh;
+    background: var(--background);
+    color: white;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Inter', sans-serif;
+    overflow: hidden;
+    position: relative;
+}
+
+/* ─── Background Ambient ─────────────────────────────────────────────────── */
+.voxen-bg-ambient {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 0;
+    overflow: hidden;
+}
+
+.voxen-bg-orb {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(160px);
+}
+
+.voxen-bg-orb--blue {
+    top: -10%;
+    right: 15%;
+    width: 700px;
+    height: 700px;
+    background: #3366ff;
+    opacity: 0.05;
+}
+
+.voxen-bg-orb--purple {
+    bottom: -15%;
+    left: 10%;
+    width: 500px;
+    height: 500px;
+    background: #7c3aed;
+    opacity: 0.04;
+}
+
+.voxen-bg-orb--indigo {
+    top: 40%;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 600px;
+    height: 300px;
+    background: #4338ca;
+    opacity: 0.03;
+    filter: blur(200px);
+}
+
+/* ─── Header ─────────────────────────────────────────────────────────────── */
+.voxen-header {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    padding: 16px 32px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    z-index: 50;
+    background: linear-gradient(to bottom, rgba(5, 5, 10, 0.8), transparent);
+    backdrop-filter: blur(8px);
+}
+
+.voxen-header__brand {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.voxen-header__logo {
+    width: 40px;
+    height: 40px;
+    background: linear-gradient(135deg, var(--accent-blue), var(--accent-indigo));
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 20px var(--glow-blue);
+}
+
+.voxen-header__title {
+    font-size: 18px;
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    line-height: 1.2;
+    margin: 0;
+}
+
+.voxen-header__subtitle {
+    font-size: 9px;
+    color: var(--accent-blue);
+    font-weight: 700;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    margin: 0;
+}
+
+.voxen-header__controls {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+/* Status Badge */
+.voxen-status-badge {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 14px;
+    border-radius: 100px;
+    font-size: 11px;
+    font-weight: 700;
+    border: 1px solid var(--surface-border);
+    background: var(--surface);
+    color: #888;
+    transition: all 0.3s;
+}
+
+.voxen-status-badge--live {
+    background: rgba(34, 197, 94, 0.1);
+    border-color: rgba(34, 197, 94, 0.3);
+    color: #4ade80;
+}
+
+.voxen-status-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: #555;
+    transition: all 0.3s;
+}
+
+.voxen-status-dot--live {
+    background: #4ade80;
+    animation: pulse-dot 2s infinite;
+}
+
+@keyframes pulse-dot {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.7; transform: scale(1.3); }
+}
+
+/* ─── 3D Avatar Container ────────────────────────────────────────────────── */
+.voxen-avatar-container {
+    position: relative;
+    width: 100%;
+    max-width: 1100px;
+    height: 78vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 10;
+}
+
+.voxen-avatar-scene {
+    position: absolute;
+    inset: 0;
+    z-index: 20;
+    border-radius: 24px;
+    overflow: hidden;
+}
+
+/* Animated ring around avatar area */
+.voxen-avatar-ring {
+    position: absolute;
+    inset: -2px;
+    border-radius: 26px;
+    z-index: 15;
+    pointer-events: none;
+    border: 2px solid transparent;
+    transition: border-color 0.5s, box-shadow 0.5s;
+}
+
+.voxen-avatar-ring--speaking {
+    border-color: rgba(74, 122, 255, 0.3);
+    box-shadow: 0 0 40px rgba(74, 122, 255, 0.15), inset 0 0 40px rgba(74, 122, 255, 0.05);
+    animation: ring-pulse-blue 2s infinite;
+}
+
+.voxen-avatar-ring--thinking {
+    border-color: rgba(245, 158, 11, 0.3);
+    box-shadow: 0 0 40px rgba(245, 158, 11, 0.15), inset 0 0 40px rgba(245, 158, 11, 0.05);
+    animation: ring-pulse-amber 2s infinite;
+}
+
+.voxen-avatar-ring--listening {
+    border-color: rgba(34, 197, 94, 0.25);
+    box-shadow: 0 0 30px rgba(34, 197, 94, 0.1), inset 0 0 30px rgba(34, 197, 94, 0.03);
+}
+
+@keyframes ring-pulse-blue {
+    0%, 100% { box-shadow: 0 0 40px rgba(74, 122, 255, 0.15), inset 0 0 40px rgba(74, 122, 255, 0.05); }
+    50% { box-shadow: 0 0 60px rgba(74, 122, 255, 0.25), inset 0 0 60px rgba(74, 122, 255, 0.08); }
+}
+
+@keyframes ring-pulse-amber {
+    0%, 100% { box-shadow: 0 0 40px rgba(245, 158, 11, 0.15), inset 0 0 40px rgba(245, 158, 11, 0.05); }
+    50% { box-shadow: 0 0 60px rgba(245, 158, 11, 0.25), inset 0 0 60px rgba(245, 158, 11, 0.08); }
+}
+
+/* ─── Pre-meeting Overlay ────────────────────────────────────────────────── */
+.voxen-overlay-premeet {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-end;
+    padding-bottom: 64px;
+    z-index: 30;
+    background: linear-gradient(
+        to top,
+        rgba(5, 5, 10, 0.95) 0%,
+        rgba(5, 5, 10, 0.6) 40%,
+        transparent 100%
+    );
+    border-radius: 24px;
+}
+
+.voxen-overlay-premeet__content {
+    text-align: center;
+}
+
+.voxen-hero-title {
+    font-size: 48px;
+    font-weight: 900;
+    letter-spacing: -0.04em;
+    color: white;
+    margin: 0 0 8px;
+    line-height: 1.1;
+}
+
+.voxen-hero-title__accent {
+    background: linear-gradient(135deg, #60a5fa, #818cf8);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.voxen-hero-desc {
+    color: #777;
+    margin-bottom: 28px;
+    font-size: 14px;
+    max-width: 440px;
+    margin-left: auto;
+    margin-right: auto;
+    line-height: 1.6;
+}
+
+/* Start button */
+.voxen-start-btn {
+    position: relative;
+    padding: 16px 40px;
+    background: linear-gradient(135deg, #3b82f6, var(--accent-indigo));
+    color: white;
+    border: none;
+    border-radius: 16px;
+    font-weight: 700;
+    font-size: 16px;
+    cursor: pointer;
+    transition: all 0.2s;
+    overflow: hidden;
+}
+
+.voxen-start-btn:hover {
+    transform: scale(1.05);
+    background: linear-gradient(135deg, #60a5fa, #818cf8);
+}
+
+.voxen-start-btn:active {
+    transform: scale(0.97);
+}
+
+.voxen-start-btn__inner {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    position: relative;
+    z-index: 2;
+}
+
+.voxen-start-btn__glow {
+    position: absolute;
+    inset: -4px;
+    border-radius: 20px;
+    background: linear-gradient(135deg, var(--accent-blue), var(--accent-indigo));
+    opacity: 0.4;
+    filter: blur(20px);
+    z-index: 0;
+    animation: glow-pulse 3s infinite;
+}
+
+@keyframes glow-pulse {
+    0%, 100% { opacity: 0.3; transform: scale(1); }
+    50% { opacity: 0.6; transform: scale(1.05); }
+}
+
+/* ─── Meeting Overlay ────────────────────────────────────────────────────── */
+.voxen-overlay-meeting {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    z-index: 30;
+}
+
+.voxen-meeting-status {
+    position: absolute;
+    top: 24px;
+    left: 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    pointer-events: auto;
+}
+
+.voxen-meeting-status__badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 14px;
+    border-radius: 100px;
+    font-size: 11px;
+    font-weight: 700;
+    border: 1px solid var(--surface-border);
+    backdrop-filter: blur(12px);
+    background: rgba(255, 255, 255, 0.06);
+    color: rgba(255, 255, 255, 0.5);
+}
+
+.voxen-meeting-status__badge--speaking {
+    background: rgba(74, 122, 255, 0.15);
+    border-color: rgba(74, 122, 255, 0.35);
+    color: #93c5fd;
+}
+
+.voxen-meeting-status__badge--thinking {
+    background: rgba(245, 158, 11, 0.15);
+    border-color: rgba(245, 158, 11, 0.35);
+    color: #fcd34d;
+}
+
+.voxen-meeting-status__badge--listening {
+    background: rgba(34, 197, 94, 0.15);
+    border-color: rgba(34, 197, 94, 0.35);
+    color: #86efac;
+}
+
+.voxen-meeting-status__dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.3);
+}
+
+.voxen-meeting-status__dot--speaking {
+    background: #60a5fa;
+    animation: ping-dot 1.5s infinite;
+}
+
+.voxen-meeting-status__dot--thinking {
+    background: #fbbf24;
+    animation: pulse-dot 1.5s infinite;
+}
+
+.voxen-meeting-status__dot--listening {
+    background: #4ade80;
+    animation: pulse-dot 1.5s infinite;
+}
+
+@keyframes ping-dot {
+    0% { transform: scale(1); opacity: 1; }
+    75% { transform: scale(2); opacity: 0; }
+    100% { transform: scale(1); opacity: 0; }
+}
+
+.voxen-thinking-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 14px;
+    border-radius: 100px;
+    font-size: 10px;
+    font-weight: 700;
+    background: rgba(0, 0, 0, 0.5);
+    border: 1px solid var(--surface-border);
+    backdrop-filter: blur(12px);
+}
+
+/* User Transcript */
+.voxen-transcript {
+    position: absolute;
+    top: 24px;
+    right: 24px;
+    z-index: 30;
+    max-width: 320px;
+}
+
+.voxen-transcript__inner {
+    padding: 14px 18px;
+    background: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(12px);
+    border: 1px solid var(--surface-border);
+    border-radius: 16px;
+}
+
+.voxen-transcript__label {
+    font-size: 10px;
+    color: rgba(255, 255, 255, 0.35);
+    font-family: monospace;
+    margin-bottom: 4px;
+    letter-spacing: 0.15em;
+}
+
+.voxen-transcript__text {
+    font-size: 14px;
+    color: white;
+    line-height: 1.5;
+    margin: 0;
+}
+
+/* AI Response */
+.voxen-response {
+    position: absolute;
+    bottom: 16px;
+    left: 24px;
+    right: 24px;
+    z-index: 30;
+}
+
+.voxen-response__label {
+    font-size: 10px;
+    color: rgba(74, 122, 255, 0.5);
+    font-family: monospace;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    margin-bottom: 6px;
+}
+
+.voxen-response__text {
+    font-size: 20px;
+    font-weight: 600;
+    color: white;
+    line-height: 1.4;
+    max-width: 700px;
+    margin: 0;
+    text-shadow: 0 2px 20px rgba(0, 0, 0, 0.5);
+}
+
+/* ─── Voice Waveform ─────────────────────────────────────────────────────── */
+.voxen-waveform {
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 30;
+    display: flex;
+    align-items: flex-end;
+    gap: 2px;
+}
+
+.voxen-waveform__bar {
+    width: 2px;
+    border-radius: 100px;
+    background: rgba(255, 255, 255, 0.08);
+    transition: background 0.3s;
+}
+
+.voxen-waveform__bar--speaking {
+    background: rgba(74, 122, 255, 0.65);
+}
+
+.voxen-waveform__bar--listening {
+    background: rgba(34, 197, 94, 0.45);
+}
+
+/* ─── Bottom Controls ────────────────────────────────────────────────────── */
+.voxen-controls {
+    position: fixed;
+    bottom: 32px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    z-index: 50;
+}
+
+.voxen-controls__end {
+    padding: 16px;
+    background: rgba(239, 68, 68, 0.1);
+    border: 1px solid rgba(239, 68, 68, 0.3);
+    border-radius: 16px;
+    cursor: pointer;
+    transition: all 0.2s;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+}
+
+.voxen-controls__end:hover {
+    background: #ef4444;
+    transform: scale(1.05);
+}
+
+.voxen-controls__end:active {
+    transform: scale(0.95);
+}
+
+.voxen-controls__mic {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 20px;
+    border-radius: 16px;
+    border: 1px solid var(--surface-border);
+    font-size: 14px;
+    font-weight: 600;
+    backdrop-filter: blur(16px);
+    background: var(--surface);
+    color: #888;
+    transition: all 0.3s;
+}
+
+.voxen-controls__mic--active {
+    background: rgba(34, 197, 94, 0.1);
+    border-color: rgba(34, 197, 94, 0.2);
+    color: #4ade80;
+}
+
+.voxen-controls__speaking {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 16px;
+    background: rgba(74, 122, 255, 0.1);
+    border: 1px solid rgba(74, 122, 255, 0.2);
+    border-radius: 16px;
+    font-size: 14px;
+    font-weight: 600;
+    color: #60a5fa;
+}
+
+/* ─── Responsive ─────────────────────────────────────────────────────────── */
+@media (max-width: 768px) {
+    .voxen-header {
+        padding: 12px 16px;
+    }
+
+    .voxen-avatar-container {
+        height: 70vh;
+    }
+
+    .voxen-hero-title {
+        font-size: 32px;
+    }
+
+    .voxen-hero-desc {
+        font-size: 13px;
+        max-width: 300px;
+    }
+
+    .voxen-response__text {
+        font-size: 16px;
+    }
+}
+
+/* ─── Utility Animations ─────────────────────────────────────────────────── */
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes float {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-8px); }
+}
+
+@keyframes shimmer {
+    0% { background-position: -200% center; }
+    100% { background-position: 200% center; }
+}
